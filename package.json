@@ -1,0 +1,39 @@
+{
+  "name": "heartcrown",
+  "version": "1.0.1",
+  "description": "Heartcrown Application",
+  "main": "main.js",
+  "author": "Herra-Atlas",
+  "scripts": {
+    "start": "electron .",
+    "publish": "electron-builder --publish always"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/Herra-Atlas/heartcrown.git"
+  },
+  "dependencies": {
+    "electron-updater": "^6.2.1"
+  },
+  "devDependencies": {
+    "electron": "^30.0.6",
+    "electron-builder": "^24.13.3"
+  },
+  "build": {
+    "appId": "com.laurimannervaara67.heartcrown",
+    "productName": "Heartcrown",
+    "files": [
+      "main.js",
+      "preload.js",
+      "index.html",
+      "loading.html",
+      "includes/**/*",
+      "sovellukset/**/*"
+    ],
+    "publish": {
+      "provider": "github",
+      "owner": "Herra-Atlas",
+      "repo": "heartcrown"
+    }
+  }
+}

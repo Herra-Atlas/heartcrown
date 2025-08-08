@@ -1,0 +1,38 @@
+<div class="muistio-container">
+    <div id="muistio-container">
+            <div class="search-container">
+                <i class="fas fa-search search-icon"></i>
+                <input type="text" id="search-input" placeholder="Hae muistoja otsikon tai tagin perusteella...">
+            </div>
+            
+            <div class="add-note-container">
+                <button id="add-note-button" class="action-btn"><i class="fas fa-plus"></i> Luo uusi muistio</button>
+            </div>
+
+            <div id="muistot-grid">
+                <!-- Muistot ladataan tänne JavaScriptillä -->
+            </div>
+        </div>
+    </div>
+
+    <!-- Modalin pohja (pysyy samana) -->
+    <div id="note-modal" class="modal">
+        <div class="modal-content">
+            <span class="close-button">&times;</span>
+            <div id="modal-image-container">
+                <button id="change-image-button" class="action-btn"><i class="fas fa-camera"></i> Vaihda kuva</button>
+            </div>
+            <div id="modal-body">
+                <h2 id="modal-title" contenteditable="false"></h2>
+                <p id="modal-content-text" contenteditable="false"></p>
+                <div class="modal-footer">
+                    <span id="modal-timestamp"></span>
+                    <div class="modal-actions">
+                        <button id="edit-button" class="action-btn"><i class="fas fa-pencil-alt"></i> Muokkaa</button>
+                        <button id="save-button" class="action-btn" style="display: none;"><i class="fas fa-save"></i> Tallenna</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

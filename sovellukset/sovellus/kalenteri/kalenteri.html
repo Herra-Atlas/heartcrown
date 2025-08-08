@@ -1,0 +1,98 @@
+<!-- KALENTERISOVELLUKSEN PÄÄKONTTI -->
+<div id="kalenteri-sovellus" data-theme="light" data-accent="blue">
+
+    <!-- ASETUSPANEELI TEEMOJEN JA VÄRIEN VAIHTOON -->
+    <div class="asetuspaneeli">
+        <div class="asetusryhma">
+            <strong>Teema</strong>
+            <div class="vaihtoehdot">
+                <button class="teema-valinta aktiivinen" data-teema="light">Vaalea</button>
+                <button class="teema-valinta" data-teema="dark">Tumma</button>
+                <button class="teema-valinta" data-teema-ocean="ocean">Valtameri</button>
+            </div>
+        </div>
+        <div class="asetusryhma">
+            <strong>Korostusväri</strong>
+            <div class="vaihtoehdot">
+                <button class="vari-valinta" data-vari="blue" style="background-color: #3498db;"></button>
+                <button class="vari-valinta" data-vari="green" style="background-color: #2ecc71;"></button>
+                <button class="vari-valinta" data-vari="red" style="background-color: #e74c3c;"></button>
+                <button class="vari-valinta" data-vari="purple" style="background-color: #9b59b6;"></button>
+            </div>
+        </div>
+    </div>
+
+    <!-- YLÄPALKKI NAVIGOINTIIN JA TOIMINTOIHIN -->
+    <header class="kalenteri-ylapalkki">
+        <div class="ylapalkki-vasen">
+            <h2 id="kuukausi-otsikko">Elokuu 2025</h2>
+        </div>
+        <div class="ylapalkki-keski">
+            <button class="nav-nappi" id="edellinen-kk"><i class="fas fa-chevron-left"></i></button>
+            <button class="tanaan-nappi" id="tanaan-nappi">Tänään</button>
+            <button class="nav-nappi" id="seuraava-kk"><i class="fas fa-chevron-right"></i></button>
+        </div>
+        <div class="ylapalkki-oikea">
+            <button class="lisaa-nappi" id="lisaa-tapahtuma-nappi"><i class="fas fa-plus"></i> Lisää tapahtuma</button>
+        </div>
+    </header>
+
+    <!-- KALENTERIN PÄÄRUUDUKKO -->
+    <main class="kalenteri-grid">
+        <!-- Viikonpäivien otsikot -->
+        <div class="paiva-otsikko">Maanantai</div>
+        <div class="paiva-otsikko">Tiistai</div>
+        <div class="paiva-otsikko">Keskiviikko</div>
+        <div class="paiva-otsikko">Torstai</div>
+        <div class="paiva-otsikko">Perjantai</div>
+        <div class="paiva-otsikko">Lauantai</div>
+        <div class="paiva-otsikko">Sunnuntai</div>
+
+        <div class="kalenteri-paiva ei-tama-kuukausi">
+            <div class="paivan-numero">28</div>
+        </div>
+        <div class="kalenteri-paiva ei-tama-kuukausi">
+            <div class="paivan-numero">29</div>
+        </div>
+        <div class="kalenteri-paiva ei-tama-kuukausi">
+            <div class="paivan-numero">30</div>
+        </div>
+        <div class="kalenteri-paiva ei-tama-kuukausi">
+            <div class="paivan-numero">31</div>
+        </div>
+
+        <!-- Esimerkki: nykyisen kuukauden päiviä -->
+        <div class="kalenteri-paiva">
+            <div class="paivan-numero">1</div>
+        </div>
+        <div class="kalenteri-paiva">
+            <div class="paivan-numero">2</div>
+            <div class="paivan-tapahtumat">
+                <div class="tapahtuma tapahtuma-projekti">Projektin aloitus</div>
+            </div>
+        </div>
+        <div class="kalenteri-paiva">
+            <div class="paivan-numero">3</div>
+        </div>
+        <!-- ... lisää päiviä ... -->
+        <div class="kalenteri-paiva">
+            <div class="paivan-numero">7</div>
+        </div>
+        <div class="kalenteri-paiva tanaan"> <!-- Tämän päivän merkintä -->
+            <div class="paivan-numero">8</div>
+            <div class="paivan-tapahtumat">
+                <div class="tapahtuma tapahtuma-kokous">Viikkopalaveri</div>
+                <div class="tapahtuma tapahtuma-henkilokohtainen">Lääkäri</div>
+            </div>
+        </div>
+        <!-- ... lisää päiviä ... -->
+         <div class="kalenteri-paiva">
+            <div class="paivan-numero">31</div>
+        </div>
+
+        <!-- Esimerkki: seuraavan kuukauden päiviä -->
+        <div class="kalenteri-paiva ei-tama-kuukausi">
+            <div class="paivan-numero">1</div>
+        </div>
+    </main>
+</div>

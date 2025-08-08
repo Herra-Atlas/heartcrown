@@ -1,0 +1,245 @@
+/* ====================================================== */
+/*                KALENTERISOVELLUKSEN CSS                */
+/* ====================================================== */
+
+/* --- Fontit ja perusasetukset --- */
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+
+:root {
+    --font-family: 'Inter', sans-serif;
+}
+
+/* --- Animaatiot --- */
+@keyframes fadeInUp {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+@keyframes popIn {
+    from {
+        opacity: 0;
+        transform: scale(0.95);
+    }
+    to {
+        opacity: 1;
+        transform: scale(1);
+    }
+}
+
+/* --- Päämuuttujat ja Teemat --- */
+#kalenteri-sovellus {
+    font-family: var(--font-family);
+    padding: 2rem;
+    overflow: hidden; /* Varmistaa, että animaatiot eivät aiheuta vierityspalkkeja */
+    transition: background-color 0.4s ease;
+}
+
+/* Vaalea teema (oletus) */
+#kalenteri-sovellus[data-theme="light"] {
+    --bg-primary: #ffffff;
+    --bg-secondary: #f7f8fa;
+    --text-primary: #2c3e50;
+    --text-secondary: #7f8c8d;
+    --border-color: #e8eaed;
+    --shadow-color: rgba(0, 0, 0, 0.05);
+}
+
+/* Tumma teema */
+#kalenteri-sovellus[data-theme="dark"] {
+    --bg-primary: #2c3e50;
+    --bg-secondary: #34495e;
+    --text-primary: #ecf0f1;
+    --text-secondary: #bdc3c7;
+    --border-color: #3e5771;
+    --shadow-color: rgba(0, 0, 0, 0.2);
+}
+
+/* Valtameri-teema */
+#kalenteri-sovellus[data-theme="ocean"] {
+    --bg-primary: #0d1b2a;
+    --bg-secondary: #1b263b;
+    --text-primary: #e0e1dd;
+    --text-secondary: #778da9;
+    --border-color: #415a77;
+    --shadow-color: rgba(0, 0, 0, 0.2);
+}
+
+/* Korostusvärit */
+#kalenteri-sovellus[data-accent="blue"] { --accent-color: #3498db; }
+#kalenteri-sovellus[data-accent="green"] { --accent-color: #2ecc71; }
+#kalenteri-sovellus[data-accent="red"] { --accent-color: #e74c3c; }
+#kalenteri-sovellus[data-accent="purple"] { --accent-color: #9b59b6; }
+
+
+/* --- Yleiset komponentit --- */
+.kalenteri-ylapalkki button, .asetuspaneeli button {
+    font-family: var(--font-family);
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    background-color: var(--bg-secondary);
+    color: var(--text-primary);
+}
+
+.kalenteri-ylapalkki button:hover, .asetuspaneeli button:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 10px var(--shadow-color);
+}
+
+
+/* --- Asetuspaneeli --- */
+.asetuspaneeli {
+    position: absolute;
+    top: 20px;
+    right: 20px;
+    background-color: var(--bg-primary);
+    padding: 1rem;
+    border-radius: 12px;
+    box-shadow: 0 8px 30px var(--shadow-color);
+    border: 1px solid var(--border-color);
+    z-index: 100;
+}
+.asetusryhma { margin-bottom: 1rem; }
+.asetusryhma:last-child { margin-bottom: 0; }
+.asetusryhma strong { color: var(--text-secondary); font-size: 0.8rem; text-transform: uppercase; }
+.vaihtoehdot { display: flex; gap: 0.5rem; margin-top: 0.5rem; }
+.teema-valinta { padding: 0.5rem 1rem; font-size: 0.9rem; }
+.teema-valinta.aktiivinen { background-color: var(--accent-color); color: white; }
+.vari-valinta { width: 25px; height: 25px; padding: 0; border: 2px solid var(--bg-primary); }
+.vari-valinta:hover { border-color: var(--accent-color); }
+
+
+/* --- Yläpalkki --- */
+.kalenteri-ylapalkki {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 2rem;
+    animation: fadeInUp 0.5s ease-out forwards;
+}
+#kuukausi-otsikko {
+    color: var(--text-primary);
+    font-size: 1.75rem;
+    font-weight: 700;
+}
+.ylapalkki-keski {
+    display: flex;
+    gap: 0.5rem;
+}
+.nav-nappi, .tanaan-nappi {
+    padding: 0.75rem;
+    font-size: 1rem;
+    width: 50px;
+    text-align: center;
+}
+.tanaan-nappi { width: auto; padding: 0.75rem 1.5rem; }
+.lisaa-nappi {
+    padding: 0.75rem 1.5rem;
+    background-color: var(--accent-color);
+    color: white;
+    font-weight: 600;
+}
+.lisaa-nappi i { margin-right: 0.5rem; }
+
+
+/* --- Kalenteriruudukko --- */
+.kalenteri-grid {
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+    gap: 5px;
+}
+
+.paiva-otsikko {
+    text-align: center;
+    padding: 1rem 0;
+    color: var(--text-secondary);
+    font-weight: 600;
+    font-size: 0.9rem;
+    animation: popIn 0.5s ease-out forwards;
+    opacity: 0;
+}
+.paiva-otsikko:nth-child(2) { animation-delay: 0.05s; }
+.paiva-otsikko:nth-child(3) { animation-delay: 0.1s; }
+.paiva-otsikko:nth-child(4) { animation-delay: 0.15s; }
+.paiva-otsikko:nth-child(5) { animation-delay: 0.2s; }
+.paiva-otsikko:nth-child(6) { animation-delay: 0.25s; }
+.paiva-otsikko:nth-child(7) { animation-delay: 0.3s; }
+
+.kalenteri-paiva {
+    background-color: var(--bg-primary);
+    border: 1px solid var(--border-color);
+    border-radius: 8px;
+    min-height: 120px;
+    padding: 0.75rem;
+    transition: all 0.2s ease;
+    opacity: 0;
+    animation: popIn 0.5s ease-out forwards;
+    animation-delay: 0.4s; /* JS voi porrastaa tämän */
+}
+
+.kalenteri-paiva:hover {
+    transform: scale(1.03);
+    border-color: var(--accent-color);
+    box-shadow: 0 8px 20px var(--shadow-color);
+    z-index: 10;
+}
+
+.paivan-numero {
+    font-weight: 600;
+    color: var(--text-primary);
+    text-align: right;
+    margin-bottom: 0.5rem;
+    transition: all 0.2s ease;
+}
+
+.kalenteri-paiva.ei-tama-kuukausi {
+    background-color: var(--bg-secondary);
+    opacity: 0.6;
+}
+.kalenteri-paiva.ei-tama-kuukausi:hover {
+    opacity: 1;
+}
+
+.kalenteri-paiva.tanaan {
+    border: 2px solid var(--accent-color);
+}
+.kalenteri-paiva.tanaan .paivan-numero {
+    background-color: var(--accent-color);
+    color: white;
+    border-radius: 50%;
+    width: 28px;
+    height: 28px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    float: right;
+}
+
+/* --- Tapahtumat --- */
+.paivan-tapahtumat {
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+    clear: both;
+}
+.tapahtuma {
+    background-color: var(--bg-secondary);
+    color: var(--text-primary);
+    padding: 0.3rem 0.6rem;
+    border-radius: 4px;
+    font-size: 0.8rem;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    border-left: 3px solid var(--text-secondary);
+}
+.tapahtuma-projekti { border-left-color: #3498db; }
+.tapahtuma-kokous { border-left-color: #f1c40f; }
+.tapahtuma-henkilokohtainen { border-left-color: #e74c3c; }

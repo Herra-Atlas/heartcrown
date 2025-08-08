@@ -1,0 +1,35 @@
+<div class="crypt-container">
+    <div class="crypt-panel">
+        <h1 class="animate-in" style="--stagger-index: 0;"><i class="fas fa-lock" style="color: var(--crypt-accent-color);"></i> Salaa Tekstiä tai Tiedosto</h1>
+
+        <div class="form-group animate-in" style="--stagger-index: 1;">
+            <label for="encrypt-input">Syötä teksti</label>
+            <textarea id="encrypt-input" class="crypt-textarea" placeholder="Liitä salattava tekstisi tähän..."></textarea>
+        </div>
+        
+        <div class="form-group animate-in" style="--stagger-index: 2;">
+            <label for="encrypt-algorithm">Algoritmi</label>
+            <div class="crypt-select-wrapper">
+                <select id="encrypt-algorithm" class="crypt-select">
+                    <option value="aes-256-gcm">AES-256-GCM (Suositeltu)</option>
+                    <option value="chacha20-poly1305">ChaCha20-Poly1305</option>
+                </select>
+            </div>
+        </div>
+
+        <div class="form-group animate-in" style="--stagger-index: 3;">
+            <label for="encrypt-password">Salasana</label>
+            <input type="password" id="encrypt-password" class="crypt-input" placeholder="Erittäin vahva salasana">
+        </div>
+
+        <button id="encrypt-button" class="crypt-btn btn-primary animate-in" style="--stagger-index: 4;"><i class="fas fa-bolt"></i> Salaa Nyt</button>
+
+        <div class="form-group animate-in" style="--stagger-index: 5; margin-top: 2.5rem;">
+            <label for="encrypt-output">Salattu tulos</label>
+            <div class="output-actions">
+                <button id="copy-output-btn" class="crypt-btn btn-secondary"><i class="fas fa-copy"></i></button>
+            </div>
+            <textarea id="encrypt-output" class="crypt-textarea" readonly placeholder="Salattu data ilmestyy tähän..."></textarea>
+        </div>
+    </div>
+</div>
