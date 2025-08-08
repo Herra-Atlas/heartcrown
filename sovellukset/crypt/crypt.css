@@ -1,0 +1,193 @@
+/* ====================================================== */
+/*         UUDISTETTU & MODERNI SALAUS-CSS V2.0           */
+/* ====================================================== */
+
+/* --- Perusasetukset ja fontti --- */
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600&family=Roboto+Mono:wght@400&display=swap');
+
+:root {
+    --crypt-bg-primary: #121418;
+    --crypt-panel-bg: rgba(30, 34, 43, 0.7); /* Lasimainen tausta */
+    --crypt-border-color: rgba(138, 145, 160, 0.2);
+    --crypt-accent-color: #00aaff;
+    --crypt-accent-gradient: linear-gradient(45deg, #00aaff, #0077ff);
+    --crypt-accent-hover: #0088cc;
+    --crypt-text-primary: #f0f2f5;
+    --crypt-text-secondary: #9ba3b1;
+    --crypt-success-color: #2ecc71;
+    --crypt-error-color: #e74c3c;
+
+    --font-ui: 'Poppins', sans-serif;
+    --font-mono: 'Roboto Mono', monospace;
+}
+
+/* --- Animaatiot --- */
+@keyframes fadeInUp {
+    from { opacity: 0; transform: translateY(20px) scale(0.98); }
+    to { opacity: 1; transform: translateY(0) scale(1); }
+}
+
+@keyframes aurora-glow {
+    0% { background-position: 0% 50%; }
+    50% { background-position: 100% 50%; }
+    100% { background-position: 0% 50%; }
+}
+
+/* --- Yleinen säiliö ja elävä tausta --- */
+.crypt-container {
+    padding: 2rem;
+    font-family: var(--font-ui);
+    color: var(--text-primary);
+    background-color: var(--crypt-bg-primary);
+    min-height: 100vh;
+    position: relative;
+    overflow: hidden; /* Estää hehkujen ylivuotamisen */
+    z-index: 1;
+}
+
+.crypt-container::before {
+    content: '';
+    position: absolute;
+    top: -50%; left: -50%;
+    width: 200%; height: 200%;
+    z-index: -1;
+    background-image: 
+        radial-gradient(circle at 20% 20%, hsla(210, 100%, 70%, 0.3), transparent 30%),
+        radial-gradient(circle at 80% 30%, hsla(280, 100%, 70%, 0.25), transparent 35%),
+        radial-gradient(circle at 50% 80%, hsla(180, 100%, 65%, 0.2), transparent 40%);
+    background-size: 200% 200%;
+    animation: aurora-glow 30s linear infinite;
+}
+
+/* --- Paneelit (Glassmorphism) --- */
+.crypt-panel {
+    background: var(--crypt-panel-bg);
+    border: 1px solid var(--crypt-border-color);
+    border-radius: 20px;
+    padding: 2.5rem;
+    max-width: 800px;
+    margin: 0 auto;
+    box-shadow: 0 15px 40px rgba(0, 0, 0, 0.4);
+    backdrop-filter: blur(12px) saturate(150%); /* Lasiefekti */
+    transform: perspective(1000px);
+}
+
+/* Porrastetut animaatiot elementeille */
+.animate-in {
+    opacity: 0;
+    animation: fadeInUp 0.7s cubic-bezier(0.25, 1, 0.5, 1) forwards;
+    animation-delay: calc(var(--stagger-index) * 80ms);
+}
+
+
+.crypt-panel h1 {
+    font-size: 2rem;
+    font-weight: 600;
+    margin-top: 0;
+    margin-bottom: 2rem;
+    color: var(--text-primary);
+    border-bottom: 1px solid var(--crypt-border-color);
+    padding-bottom: 1rem;
+}
+
+/* --- Lomake-elementit --- */
+.form-group { margin-bottom: 1.5rem; }
+.form-group label { /* ennallaan */ }
+
+.crypt-textarea,
+.crypt-input,
+.crypt-select {
+    width: 100%;
+    background-color: rgba(0, 0, 0, 0.2); /* Läpikuultava tausta */
+    border: 1px solid var(--crypt-border-color);
+    border-radius: 10px;
+    padding: 1rem;
+    font-size: 1rem;
+    color: var(--text-primary);
+    font-family: var(--font-mono);
+    transition: all 0.3s ease;
+}
+
+.crypt-textarea:focus,
+.crypt-input:focus,
+.crypt-select:focus {
+    outline: none;
+    border-color: var(--crypt-accent-color);
+    box-shadow: 0 0 15px rgba(0, 170, 255, 0.3), 0 0 0 1px var(--crypt-accent-color);
+}
+
+.crypt-textarea { min-height: 150px; resize: vertical; }
+
+/* --- Pudotusvalikon parannukset (ennallaan) --- */
+.crypt-select-wrapper { position: relative; cursor: pointer; }
+.crypt-select { appearance: none; -webkit-appearance: none; padding-right: 2.5rem; }
+.crypt-select-wrapper::after { /* ennallaan */ }
+.crypt-select-wrapper:hover::after { /* ennallaan */ }
+
+/* --- Painikkeet --- */
+.crypt-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.75rem;
+    padding: 0.9rem 2rem;
+    font-family: var(--font-ui);
+    font-size: 1rem;
+    font-weight: 600;
+    border-radius: 10px;
+    border: none;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    transform: scale(1);
+}
+
+.btn-primary {
+    background: var(--crypt-accent-gradient);
+    color: white;
+    box-shadow: 0 5px 20px rgba(0, 170, 255, 0.25);
+}
+.btn-primary:hover {
+    transform: scale(1.05) translateY(-2px);
+    box-shadow: 0 8px 25px rgba(0, 170, 255, 0.4);
+}
+
+.btn-secondary {
+    background-color: transparent;
+    border: 1px solid var(--crypt-border-color);
+    color: var(--text-secondary);
+}
+.btn-secondary:hover {
+    background-color: rgba(255, 255, 255, 0.05);
+    color: var(--text-primary);
+    border-color: var(--crypt-text-secondary);
+}
+
+.output-actions {
+    display: flex;
+    justify-content: flex-end;
+    gap: 0.5rem;
+    margin-top: -2.3rem;
+    margin-right: 0.5rem;
+    position: relative;
+    z-index: 2;
+}
+
+/* --- Asetussivun erityistyylit (ennallaan, mutta perivät uudet tyylit) --- */
+.setting-row { /* ... */ }
+.setting-label span { /* ... */ }
+
+/* Toggle Switch (parannettu hehkulla) */
+.toggle-switch { /* ... */ }
+.toggle-switch input { /* ... */ }
+.slider { /* ... */ }
+.slider:before { /* ... */ }
+
+input:checked + .slider {
+    background-color: var(--crypt-accent-color);
+    border-color: var(--crypt-accent-color);
+    box-shadow: 0 0 10px rgba(0, 170, 255, 0.5);
+}
+input:checked + .slider:before {
+    transform: translateX(22px);
+    background-color: white;
+}

@@ -1,0 +1,35 @@
+{
+  "name": "heartcrown",
+  "version": "1.0.0",
+  "description": "Heartcrown-sovellus",
+  "main": "main.js",
+  "author": "Atlas",
+  "scripts": {
+    "start": "electron .",
+    "dist": "electron-builder",
+    "publish": "electron-builder --publish always"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/Herra-Atlas/heartcrown.git"
+  },
+  "dependencies": {
+    "electron": "^30.0.6",
+    "electron-updater": "^6.2.1"
+  },
+  "devDependencies": {
+    "electron-builder": "^24.13.3"
+  },
+  "build": {
+    "appId": "com.omadomain.heartcrown",
+    "productName": "heartcrown",
+    "win": {
+      "target": "nsis"
+    },
+    "publish": {
+      "provider": "github",
+      "owner": "Herra-Atlas",
+      "repo": "heartcrown"
+    }
+  }
+}

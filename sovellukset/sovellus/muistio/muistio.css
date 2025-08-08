@@ -1,0 +1,178 @@
+/* --- YLEISET ANIMAATIOT --- */
+
+@keyframes fadeInDown {
+    from {
+        opacity: 0;
+        transform: translateY(-20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+@keyframes popIn {
+    from {
+        opacity: 0;
+        transform: scale(0.9);
+    }
+    to {
+        opacity: 1;
+        transform: scale(1);
+    }
+}
+
+/* Sovelletaan animaatioita elementteihin */
+h1, .search-container, .add-note-container {
+    /* Estää elementtien näkymisen ennen animaatiota */
+    opacity: 0; 
+    animation: fadeInDown 0.6s ease-out forwards;
+}
+
+/* Animaatioiden porrastus */
+.search-container { animation-delay: 0.1s; }
+.add-note-container { animation-delay: 0.2s; }
+
+.muistio-container {
+    padding: 20px;
+}
+/* --- UUDEN MUISTION LUONTIPAINIKE --- */
+.add-note-container {
+    margin-bottom: 2rem;
+    text-align: center;
+}
+
+#add-note-button {
+    background-color: #28a745; /* Vihreä väri luomiselle */
+    padding: 12px 25px;
+    font-size: 1rem;
+}
+
+#add-note-button:hover {
+    background-color: #218838;
+}
+
+/* Hakukentän tyylit */
+.search-container {
+    position: relative;
+    margin: 0 auto 1.5rem auto; /* Keskitetään ja lisätään tilaa */
+    width: 100%;
+    max-width: 500px;
+}
+
+/* Piilota painike oletuksena */
+#change-image-button {
+    display: none; 
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    z-index: 3; /* Varmistaa, että on kuvan päällä */
+    background-color: rgba(0, 0, 0, 0.5);
+    border: 2px solid white;
+    backdrop-filter: blur(3px);
+}
+
+#change-image-button:hover {
+    background-color: rgba(0, 0, 0, 0.7);
+}
+
+/* Näytä painike, kun modal on muokkaustilassa */
+.modal-content.edit-mode #change-image-button {
+    display: inline-flex; /* tai flex */
+}
+
+/* Modal-ikkunan tyylit */
+/* Lisätään modal-contentiin siirtymäefekti */
+.modal-content {
+    background-color: #fefefe;
+    margin: 10% auto;
+    border-radius: 15px;
+    width: 90%;
+    max-width: 700px;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+    position: relative;
+    overflow: hidden;
+    animation: slideIn 0.4s ease-out;
+    transition: box-shadow 0.3s ease; /* Lisätään siirtymä */
+}
+
+/* Korostetaan modalia muokkaustilassa */
+.modal-content.edit-mode {
+    box-shadow: 0 10px 30px rgba(74, 144, 226, 0.4);
+}
+
+#modal-image-container {
+    height: 250px;
+    background-size: cover;
+    background-position: center;
+    /* Poistetaan filter tästä ja siirretään se alemmas */
+    position: relative; /* Muutettu absolutesta */
+    top: 0;
+    left: 0;
+    right: 0;
+    z-index: 1;
+    background-color: #333; /* Oletusväri jos kuvaa ei ole */
+    transition: background-image 0.3s ease-in-out;
+}
+
+/* Sumentaa kuvan, mutta ei painiketta */
+#modal-image-container::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: inherit; /* Perii #modal-image-container:n taustakuvan */
+    filter: blur(3px) brightness(0.6);
+    z-index: 2;
+}
+
+#search-input { width: 100%; padding: 12px 20px 12px 45px; border: 1px solid #ddd; border-radius: 25px; font-size: 1rem; transition: all 0.3s ease; box-shadow: 0 2px 5px rgba(0,0,0,0.05); }
+#search-input:focus { outline: none; border-color: #4a90e2; box-shadow: 0 4px 10px rgba(74, 144, 226, 0.2); }
+.search-icon { position: absolute; left: 15px; top: 50%; transform: translateY(-50%); color: #aaa; }
+
+/* Muistioiden ruudukko */
+#muistot-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 2rem; }
+
+.note-card {
+    background-color: #fff;
+    border-radius: 15px;
+    box-shadow: 0 8px 16px rgba(0,0,0,0.1);
+    cursor: pointer;
+    overflow: hidden;
+    position: relative;
+    height: 300px;
+
+    /* Animaatio kortille */
+    opacity: 0; /* Piilossa aluksi */
+    animation: popIn 0.5s ease-out forwards;
+}
+
+/* Muut .note-card -tyylit pysyvät samoina... */
+.note-card:hover { transform: translateY(-5px); box-shadow: 0 12px 24px rgba(0,0,0,0.15); }
+.note-card-image { width: 100%; height: 100%; object-fit: cover; filter: blur(2px) brightness(0.7); transition: filter 0.3s ease; }
+.note-card:hover .note-card-image { filter: blur(1px) brightness(0.8); }
+.note-card-content { position: absolute; bottom: 0; left: 0; right: 0; padding: 20px; color: #fff; z-index: 2; background: linear-gradient(to top, rgba(0,0,0,0.7) 0%, rgba(0,0,0,0) 100%); }
+.note-card h3 { margin: 0 0 10px 0; font-size: 1.4rem; }
+.note-card .timestamp { font-size: 0.8rem; opacity: 0.8; }
+
+/* Modal-ikkunan tyylit (pysyvät samoina) */
+.modal { display: none; position: fixed; z-index: 1000; left: 0; top: 0; width: 100%; height: 100%; overflow: auto; background-color: rgba(0,0,0,0.6); backdrop-filter: blur(5px); animation: fadeIn 0.3s ease; }
+.modal-content { background-color: #fefefe; margin: 10% auto; border-radius: 15px; width: 90%; max-width: 700px; box-shadow: 0 10px 30px rgba(0,0,0,0.2); position: relative; overflow: hidden; animation: slideIn 0.4s ease-out; }
+.close-button { color: #fff; position: absolute; top: 15px; right: 25px; font-size: 28px; font-weight: bold; z-index: 3; cursor: pointer; transition: color 0.2s ease; }
+.close-button:hover, .close-button:focus { color: #ccc; text-decoration: none; }
+#modal-image-container { height: 250px; background-size: cover; background-position: center; filter: blur(3px) brightness(0.6); position: absolute; top: 0; left: 0; right: 0; z-index: 1; }
+#modal-body { padding: 40px; position: relative; z-index: 2; }
+#modal-title { margin-top: 120px; font-size: 2.2rem; color: #fff; text-shadow: 0 2px 4px rgba(0,0,0,0.5); border: 2px solid transparent; border-radius: 5px; padding: 5px; }
+#modal-content-text { font-size: 1.1rem; line-height: 1.6; color: #333; margin-top: 2rem; border: 2px solid transparent; border-radius: 5px; padding: 5px; }
+#modal-title[contenteditable="true"], #modal-content-text[contenteditable="true"] { background-color: #f0f8ff; border: 2px dashed #4a90e2; outline: none; }
+#modal-title[contenteditable="true"] { color: #333; text-shadow: none; }
+.modal-footer { display: flex; justify-content: space-between; align-items: center; margin-top: 2rem; padding-top: 1rem; border-top: 1px solid #eee; }
+#modal-timestamp { font-size: 0.9rem; color: #888; }
+.action-btn { background-color: #4a90e2; color: white; padding: 10px 20px; border: none; border-radius: 20px; cursor: pointer; font-size: 0.9rem; font-weight: bold; transition: background-color 0.3s ease, box-shadow 0.3s ease; display: inline-flex; align-items: center; }
+.action-btn i { margin-right: 8px; }
+.action-btn:hover { background-color: #357abd; box-shadow: 0 4px 8px rgba(74, 144, 226, 0.3); }
+#save-button { background-color: #28a745; }
+#save-button:hover { background-color: #218838; }

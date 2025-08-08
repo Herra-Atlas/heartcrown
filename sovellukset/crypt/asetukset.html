@@ -1,0 +1,81 @@
+<div class="crypt-container">
+    <div class="crypt-panel">
+        <h1 class="animate-in" style="--stagger-index: 0;"><i class="fas fa-cog"></i> Salausasetukset</h1>
+
+        <div class="setting-row animate-in" style="--stagger-index: 1;">
+            <div class="setting-label">
+                <strong>Oletusalgoritmi</strong>
+                <span>Valitse algoritmi, jota käytetään oletuksena.</span>
+            </div>
+            <div class="setting-control">
+                <div class="crypt-select-wrapper">
+                    <select id="setting-default-algo" class="crypt-select" style="min-width: 250px;">
+                        <option value="aes-256-gcm">AES-256-GCM</option>
+                        <option value="chacha20-poly1305">ChaCha20-Poly1305</option>
+                    </select>
+                </div>
+            </div>
+        </div>
+
+        <div class="setting-row animate-in" style="--stagger-index: 2;">
+            <div class="setting-label">
+                <strong>AES Avaimen pituus</strong>
+                <span>Suurempi on turvallisempi, mutta voi olla hitaampi.</span>
+            </div>
+            <div class="setting-control">
+                <div class="crypt-select-wrapper">
+                    <select id="setting-aes-keysize" class="crypt-select" style="min-width: 250px;">
+                        <option value="256">256-bit</option>
+                        <option value="192">192-bit</option>
+                        <option value="128">128-bit</option>
+                    </select>
+                </div>
+            </div>
+        </div>
+        
+        <div class="setting-row animate-in" style="--stagger-index: 3;">
+            <div class="setting-label">
+                <strong>Ulostulon muoto</strong>
+                <span>Miten salattu data esitetään. Base64 on yleisin.</span>
+            </div>
+            <div class="setting-control">
+                 <div class="crypt-select-wrapper">
+                    <select id="setting-output-format" class="crypt-select" style="min-width: 250px;">
+                        <option value="base64">Base64</option>
+                        <option value="hex">Hex</option>
+                    </select>
+                 </div>
+            </div>
+        </div>
+
+        <div class="setting-row animate-in" style="--stagger-index: 4;">
+            <div class="setting-label">
+                <strong>Kopioi automaattisesti leikepöydälle</strong>
+                <span>Kopioi salatun tuloksen leikepöydälle heti onnistumisen jälkeen.</span>
+            </div>
+            <div class="setting-control">
+                <label class="toggle-switch">
+                    <input type="checkbox" id="setting-auto-copy" checked>
+                    <span class="slider"></span>
+                </label>
+            </div>
+        </div>
+
+        <div class="setting-row animate-in" style="--stagger-index: 5;">
+            <div class="setting-label">
+                <strong>Tyhjennä kentät operaation jälkeen</strong>
+                <span>Tyhjentää syötekentät onnistuneen salauksen/purun jälkeen.</span>
+            </div>
+            <div class="setting-control">
+                <label class="toggle-switch">
+                    <input type="checkbox" id="setting-clear-fields">
+                    <span class="slider"></span>
+                </label>
+            </div>
+        </div>
+
+        <div class="animate-in" style="--stagger-index: 6; text-align: right; margin-top: 2.5rem;">
+            <button id="save-settings-btn" class="crypt-btn btn-primary"><i class="fas fa-save"></i> Tallenna Asetukset</button>
+        </div>
+    </div>
+</div>
