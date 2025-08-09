@@ -9,6 +9,189 @@ body {
     background: #f8fafc;
 }
 
+/* Pääkontti - Kojelaudan Sielu */
+.kojelaudan_sielu {
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+}
+
+/* Yläosa */
+.ylä_osa_sielu {
+    background-color: #6a89cc; /* Rauhallinen sininen */
+    color: white;
+    padding: 30px 40px;
+    text-align: center;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+    border-bottom-left-radius: 20px; /* Pyöristetyt kulmat */
+    border-bottom-right-radius: 20px;
+}
+
+.sielun_otsikko {
+    margin: 0 0 10px 0;
+    font-size: 38px;
+    font-weight: 700;
+    letter-spacing: 1px;
+}
+
+.tervehdys_viesti {
+    margin: 0;
+    font-size: 20px;
+    opacity: 0.9;
+}
+
+.käyttäjä_nimi {
+    font-weight: bold;
+    color: #ffeaa7; /* Vaaleampi keltainen, erottuu kauniisti */
+}
+
+/* Keski Sielu (Pääsisältö) */
+.keski_sielu {
+    flex: 1; /* Ottaa kaiken vapaan pystytilan */
+    padding: 30px;
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); /* Mukautuu näytön kokoon */
+    gap: 30px; /* Tilaa elementtien välissä */
+    align-content: flex-start; /* Sisältö alkaa ylhäältä */
+}
+
+/* Yleinen korttityyli */
+.ajatuksen_lähde, .pieni_muistutus, .visio_ikkuna {
+    background-color: white;
+    padding: 25px;
+    border-radius: 15px; /* Kauniisti pyöristetyt kulmat */
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.08); /* Pehmeä varjo */
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    border-top: 6px solid; /* Yläreunan korostus */
+}
+
+/* Eri korttien värit */
+.ajatuksen_lähde { border-color: #6a89cc; } /* Sininen */
+.pieni_muistutus:nth-of-type(1) { border-color: #ffeaa7; } /* Keltainen */
+.pieni_muistutus:nth-of-type(2) { border-color: #7bed9f; } /* Vaalea vihreä */
+.visio_ikkuna { border-color: #ff6b81; } /* Koralli */
+
+
+.ajatuksen_lähde:hover, .pieni_muistutus:hover, .visio_ikkuna:hover {
+    transform: translateY(-8px); /* Nousee hieman hoverilla */
+    box-shadow: 0 12px 35px rgba(0, 0, 0, 0.12);
+}
+
+.lähde_otsikko, .muistutus_otsikko, .visio_otsikko {
+    margin-top: 0;
+    margin-bottom: 15px;
+    font-size: 24px;
+    color: #4a69bd; /* Tummempi sininen otsikoille */
+    border-bottom: 1px solid #eee;
+    padding-bottom: 10px;
+}
+
+.lähde_teksti, .visio_teksti {
+    font-size: 18px;
+    color: #555;
+    text-align: center;
+}
+
+/* Muistutuslista */
+.muistutus_lista {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.muistutus_lista li {
+    background-color: #f8f8f8;
+    padding: 10px 15px;
+    margin-bottom: 8px;
+    border-radius: 8px;
+    font-size: 16px;
+    color: #666;
+    transition: background-color 0.2s ease;
+}
+
+.muistutus_lista li:hover {
+    background-color: #e0e0e0;
+}
+
+/* Onnellisuuden Luku - tyylit */
+.muistutus_arvo {
+    font-size: 60px; /* Suuri, erottuva luku */
+    font-weight: bold;
+    color: #2ecc71; /* Rauhoittava vihreä */
+    margin: 0;
+    text-align: center;
+}
+
+.arvio_teksti {
+    display: block; /* Varmistaa, että on omalla rivillään */
+    font-size: 16px;
+    color: #777;
+    text-align: center;
+    margin-top: 10px;
+}
+
+/* Alaosa (Alapalkki) */
+.ala_sielu {
+    background-color: #4a69bd; /* Yläosan sininen */
+    color: white;
+    text-align: center;
+    padding: 20px 0;
+    margin-top: auto;
+    box-shadow: 0 -4px 15px rgba(0, 0, 0, 0.1);
+    border-top-left-radius: 20px;
+    border-top-right-radius: 20px;
+}
+
+.sielun_footer_teksti {
+    margin: 0;
+    font-size: 15px;
+    opacity: 0.9;
+}
+
+/* Responsiivisuus */
+@media (max-width: 768px) {
+    .ylä_osa_sielu {
+        padding: 25px 20px;
+        border-bottom-left-radius: 10px;
+        border-bottom-right-radius: 10px;
+    }
+
+    .sielun_otsikko {
+        font-size: 32px;
+    }
+
+    .tervehdys_viesti {
+        font-size: 18px;
+    }
+
+    .keski_sielu {
+        padding: 20px;
+        gap: 20px;
+        grid-template-columns: 1fr; /* Yksi sarake pienemmällä näytöllä */
+    }
+
+    .ajatuksen_lähde, .pieni_muistutus, .visio_ikkuna {
+        padding: 20px;
+    }
+
+    .lähde_otsikko, .muistutus_otsikko, .visio_otsikko {
+        font-size: 22px;
+    }
+
+    .lähde_teksti, .visio_teksti {
+        font-size: 16px;
+    }
+
+    .muistutus_arvo {
+        font-size: 50px;
+    }
+
+    .ala_sielu {
+        border-top-left-radius: 10px;
+        border-top-right-radius: 10px;
+    }
+}
+
 .sidebar {
     width: 280px;
     height: 100vh;
