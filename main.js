@@ -2,101 +2,72 @@ const { app, BrowserWindow, autoUpdater, ipcMain, dialog } = require('electron')
 const path = require('path');
 const fs = require('fs').promises;
 const fsSync = require('fs');
+const log = require('electron-log');
 
 // --- Globaalit muuttujat ikkunoille ---
 let mainWindow;
 let loadingWindow;
 
-// --- Sivupalkin ja datan polut (kuten ennenkin) ---
+// --- Sivupalkin ja datan polut ---
 function getHeaderHTML() {
   const headerPath = path.join(__dirname, 'includes', 'header.html');
-  try {
-    return fsSync.readFileSync(headerPath, 'utf8');
-  } catch (err) {
-    return '<div style="color:red">Sidebar failed to load: ' + err.message + '</div>';
-  }
+  try { return fsSync.readFileSync(headerPath, 'utf8'); }
+  catch (err) { return '<div style="color:red">Sidebar failed to load: ' + err.message + '</div>'; }
 }
 const dataPath = path.join(app.getPath('userData'), 'muistot.json');
 const settingsPath = path.join(app.getPath('userData'), 'crypt-settings.json');
 
-
-// --- UUSI: Ladataan... -ikkuna ---
+// --- Ikkunoiden luontifunktiot ---
 function createLoadingWindow() {
-  loadingWindow = new BrowserWindow({
-    width: 400,
-    height: 200,
-    frame: false, // Ei kehyksiä
-    center: true,
-    movable: true,
-    resizable: false,
-    icon: path.join(__dirname, 'includes', 'img', 'logo.png'),
-  });
+  loadingWindow = new BrowserWindow({ width: 400, height: 200, frame: false, center: true, movable: true, resizable: false, icon: path.join(__dirname, 'includes', 'img', 'logo.png') });
   loadingWindow.loadFile('loading.html');
 }
 
-// --- MUOKATTU: Pääikkuna ---
 function createMainWindow() {
-  mainWindow = new BrowserWindow({
-    width: 1200,
-    height: 800,
-    show: false, // TÄRKEÄÄ: Ikkuna luodaan piilotettuna
-    icon: path.join(__dirname, 'includes', 'img', 'logo.png'),
-    webPreferences: {
-      preload: path.join(__dirname, 'preload.js'),
-      contextIsolation: true,
-      nodeIntegration: false,
-    },
-  });
-  // mainWindow.removeMenu(); // Voit poistaa kommentin, jos et halua valikkoa
+  mainWindow = new BrowserWindow({ width: 1200, height: 800, show: false, icon: path.join(__dirname, 'includes', 'img', 'logo.png'), webPreferences: { preload: path.join(__dirname, 'preload.js'), contextIsolation: true, nodeIntegration: false } });
+  // mainWindow.removeMenu();
   mainWindow.loadFile('index.html');
-
-  // Kun pääikkuna on valmis näytettäväksi (kaikki on ladattu)...
   mainWindow.once('ready-to-show', () => {
-    if (loadingWindow) {
-      loadingWindow.destroy(); // Tuhoa latausikkuna
-    }
-    mainWindow.show(); // Näytä valmis pääikkuna
+    if (loadingWindow) { loadingWindow.destroy(); }
+    mainWindow.show();
   });
 }
 
-// --- MUOKATTU: Sovelluksen käynnistys ---
+// --- SOVELLUKSEN PÄÄLOGIIKKA ---
 app.whenReady().then(() => {
-  createLoadingWindow(); // 1. Luo latausikkuna
-  createMainWindow();    // 2. Aloita pääikkunan luonti taustalla
-  
-  autoUpdater.checkForUpdatesAndNotify();
+  createLoadingWindow();
+  createMainWindow();
+
+  // ==========================================================
+  // LOPULLINEN JA OIKEA PÄIVITYSLOGIIKKA
+  // ==========================================================
+  log.transports.file.level = "info";
+  autoUpdater.logger = log;
+
+  autoUpdater.on('checking-for-update', () => { log.info('Tarkistetaan päivityksiä...'); });
+  autoUpdater.on('update-available', (info) => { log.info('Päivitys saatavilla!', info); });
+  autoUpdater.on('update-not-available', (info) => { log.info('Ei uusia päivityksiä saatavilla.', info); });
+  autoUpdater.on('error', (err) => { log.error('Päivityksessä virhe: ' + err); });
+  autoUpdater.on('download-progress', (progressObj) => {
+      let log_message = `Ladattu ${Math.round(progressObj.percent)}% (${Math.round(progressObj.transferred/1024/1024)}MB / ${Math.round(progressObj.total/1024/1024)}MB)`;
+      log.info(log_message);
+  });
+  autoUpdater.on('update-downloaded', (info) => {
+      log.info('Päivitys ladattu onnistuneesti.', info);
+      const dialogOpts = { type: 'info', buttons: ['Käynnistä uudelleen', 'Myöhemmin'], title: 'Sovelluksen päivitys', message: `Uusi versio ${info.version} on ladattu.`, detail: 'Käynnistä sovellus uudelleen nyt ottaaksesi päivitykset käyttöön.' };
+      dialog.showMessageBox(dialogOpts).then((returnValue) => {
+          if (returnValue.response === 0) autoUpdater.quitAndInstall();
+      });
+  });
+
+  // TÄRKEÄÄ: Tarkistetaan päivitykset vasta, kun KAIKKI kuuntelijat on asetettu.
+  autoUpdater.checkForUpdates();
 
   app.on('activate', () => {
     if (BrowserWindow.getAllWindows().length === 0) {
-      createMainWindow(); // Luo vain pääikkuna, jos sovellus aktivoidaan uudelleen
+      createMainWindow();
     }
   });
-});
-
-
-// ==========================================================
-// KAIKKI VANHA LOGIIKKA SÄILYY ALLA ENNALLAAN
-// ==========================================================
-
-autoUpdater.on('update-downloaded', (event, releaseNotes, releaseName) => {
-  const dialogOpts = {
-    type: 'info',
-    buttons: ['Käynnistä uudelleen', 'Myöhemmin'],
-    title: 'Sovelluksen päivitys',
-    message: process.platform === 'win32' ? releaseNotes : releaseName,
-    detail: 'Uusi versio on ladattu. Käynnistä sovellus uudelleen ottaaksesi päivitykset käyttöön.'
-  };
-
-  dialog.showMessageBox(dialogOpts).then((returnValue) => {
-    if (returnValue.response === 0) {
-      autoUpdater.quitAndInstall();
-    }
-  });
-});
-
-autoUpdater.on('error', message => {
-  console.error('Päivityksessä tapahtui virhe');
-  console.error(message);
 });
 
 app.on('window-all-closed', () => {

@@ -1,6 +1,6 @@
 {
   "name": "heartcrown",
-  "version": "1.0.2",
+  "version": "1.0.3",
   "description": "Heartcrown Application",
   "main": "main.js",
   "author": "Herra-Atlas",
@@ -13,6 +13,7 @@
     "url": "https://github.com/Herra-Atlas/heartcrown.git"
   },
   "dependencies": {
+    "electron-log": "^5.4.2",
     "electron-updater": "^6.2.1"
   },
   "devDependencies": {
