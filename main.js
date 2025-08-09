@@ -33,24 +33,42 @@ function createMainWindow() {
   });
 }
 
+// --- SOVELLUKSEN PÄÄLOGIIKKA ---
 app.whenReady().then(() => {
   createLoadingWindow();
   createMainWindow();
 
-  // --- KORVATTU PÄIVITYSLOGIIKKA ---
+  // ==========================================================
+  // LOPULLINEN JA PAKOTETTU PÄIVITYSLOGIIKKA
+  // ==========================================================
   log.transports.file.level = "info";
   autoUpdater.logger = log;
+
+  // --- TÄMÄ ON SE VIIMEINEN KORJAUS ---
+  // Asetetaan päivityspalvelimen tiedot manuaalisesti ja väkisin.
+  // Tämä ohittaa kaikki tiedostosta lukemisen ja kaikki muut ongelmat.
+  log.info('Asetetaan päivityspalvelin manuaalisesti...');
+  autoUpdater.setFeedURL({
+      provider: 'github',
+      owner: 'Herra-Atlas',
+      repo: 'heartcrown'
+  });
+  // --- KORJAUS PÄÄTTYY ---
 
   // Asetetaan kaikki kuuntelijat valmiiksi
   autoUpdater.on('error', (err) => {
     log.error('Päivityksessä virhe: ' + err);
-    mainWindow?.webContents.send('update-status', 'error', err.message);
+    mainWindow?.webContents.send('update-status', 'error', err.message || 'Tuntematon virhe');
   });
 
+  autoUpdater.on('checking-for-update', () => { log.info('Tarkistetaan päivityksiä...'); });
+  
   autoUpdater.on('update-not-available', (info) => {
     log.info('Ei uusia päivityksiä saatavilla.', info);
     mainWindow?.webContents.send('update-status', 'not-available');
   });
+
+  autoUpdater.on('update-available', (info) => { log.info('Päivitys saatavilla!', info); });
 
   autoUpdater.on('download-progress', (progressObj) => {
     log.info(`Ladattu ${Math.round(progressObj.percent)}%`);
@@ -76,11 +94,15 @@ app.whenReady().then(() => {
   });
 });
 
-// UUSI IPC-KÄSITTELIJÄ NAPILLE
+// Käsittelijä päivitysnapille
 ipcMain.handle('check-for-updates', () => {
     log.info('Käyttäjä käynnisti päivitystarkistuksen.');
-    mainWindow?.webContents.send('update-status', 'checking');
-    autoUpdater.checkForUpdates();
+    try {
+        autoUpdater.checkForUpdates();
+    } catch (error) {
+        log.error('Päivitystarkistuksen käynnistys epäonnistui:', error);
+        mainWindow?.webContents.send('update-status', 'error', error.message);
+    }
 });
 
 app.on('window-all-closed', () => {
