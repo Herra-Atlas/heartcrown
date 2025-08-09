@@ -142,3 +142,23 @@ input:checked + .toggle-switch__slider:before {
     opacity: 0;
     transition: opacity 0.5s;
 }
+
+.update-status-container {
+    padding: 10px 15px;
+    text-align: center;
+}
+
+.update-status {
+    margin: 0;
+    font-size: 0.9em;
+    color: #a0a0a0;
+    transition: color 0.3s;
+}
+
+.update-status.error {
+    color: #c93c3c;
+}
+
+.update-status.success {
+    color: #4caf50;
+}

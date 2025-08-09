@@ -33,47 +33,54 @@ function createMainWindow() {
   });
 }
 
-// --- SOVELLUKSEN PÄÄLOGIIKKA ---
-app.whenReady().then(async () => {
+app.whenReady().then(() => {
   createLoadingWindow();
   createMainWindow();
 
-  // ==========================================================
-  // VIIMEINEN OLJENKORSI: LISÄTÄÄN VIIVE
-  // ==========================================================
-  
+  // --- KORVATTU PÄIVITYSLOGIIKKA ---
   log.transports.file.level = "info";
   autoUpdater.logger = log;
 
-  const { default: isDev } = await import('electron-is-dev');
-
-  if (isDev) {
-    log.info('Kehitystilassa, asetetaan päivitystiedot suoraan updater-objektiin...');
-    autoUpdater.provider = 'github';
-    autoUpdater.owner = 'Herra-Atlas';
-    autoUpdater.repo = 'heartcrown';
-  }
-
   // Asetetaan kaikki kuuntelijat valmiiksi
-  autoUpdater.on('checking-for-update', () => { log.info('Tarkistetaan päivityksiä...'); });
-  autoUpdater.on('update-available', (info) => { log.info('Päivitys saatavilla!', info); });
-  autoUpdater.on('update-not-available', (info) => { log.info('Ei uusia päivityksiä saatavilla.', info); });
-  autoUpdater.on('error', (err) => { log.error('Päivityksessä virhe: ' + err); });
-  autoUpdater.on('download-progress', (progressObj) => { /* ... koodisi ... */ });
-  autoUpdater.on('update-downloaded', (info) => { /* ... koodisi ... */ });
-  
-  // TÄMÄ ON MUUTOS: Lisätään 2 sekunnin viive ennen tarkistusta.
-  setTimeout(() => {
-    log.info('Viiveen jälkeen, yritetään tarkistaa päivitykset...');
-    autoUpdater.checkForUpdates();
-  }, 2000);
+  autoUpdater.on('error', (err) => {
+    log.error('Päivityksessä virhe: ' + err);
+    mainWindow?.webContents.send('update-status', 'error', err.message);
+  });
 
+  autoUpdater.on('update-not-available', (info) => {
+    log.info('Ei uusia päivityksiä saatavilla.', info);
+    mainWindow?.webContents.send('update-status', 'not-available');
+  });
+
+  autoUpdater.on('download-progress', (progressObj) => {
+    log.info(`Ladattu ${Math.round(progressObj.percent)}%`);
+    mainWindow?.webContents.send('update-status', 'downloading', progressObj.percent);
+  });
+  
+  autoUpdater.on('update-downloaded', (info) => {
+    log.info('Päivitys ladattu onnistuneesti.', info);
+    mainWindow?.webContents.send('update-status', 'downloaded');
+    dialog.showMessageBox({
+        type: 'info',
+        buttons: ['Käynnistä uudelleen', 'Myöhemmin'],
+        title: 'Sovelluksen päivitys',
+        message: `Uusi versio ${info.version} on ladattu.`,
+        detail: 'Käynnistä sovellus uudelleen nyt ottaaksesi päivitykset käyttöön.'
+    }).then(returnValue => {
+        if (returnValue.response === 0) autoUpdater.quitAndInstall();
+    });
+  });
 
   app.on('activate', () => {
-    if (BrowserWindow.getAllWindows().length === 0) {
-      createMainWindow();
-    }
+    if (BrowserWindow.getAllWindows().length === 0) createMainWindow();
   });
+});
+
+// UUSI IPC-KÄSITTELIJÄ NAPILLE
+ipcMain.handle('check-for-updates', () => {
+    log.info('Käyttäjä käynnisti päivitystarkistuksen.');
+    mainWindow?.webContents.send('update-status', 'checking');
+    autoUpdater.checkForUpdates();
 });
 
 app.on('window-all-closed', () => {
