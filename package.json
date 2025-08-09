@@ -1,6 +1,6 @@
 {
   "name": "heartcrown",
-  "version": "1.0.6",
+  "version": "1.0.7",
   "description": "Heartcrown Application",
   "main": "main.js",
   "author": "Herra-Atlas",
@@ -32,10 +32,12 @@
       "includes/**/*",
       "sovellukset/**/*"
     ],
-    "publish": {
-      "provider": "github",
-      "owner": "Herra-Atlas",
-      "repo": "heartcrown"
-    }
+    "publish": [
+      {
+        "provider": "github",
+        "owner": "Herra-Atlas",
+        "repo": "heartcrown"
+      }
+    ]
   }
 }
