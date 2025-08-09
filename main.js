@@ -34,34 +34,40 @@ function createMainWindow() {
 }
 
 // --- SOVELLUKSEN PÄÄLOGIIKKA ---
-app.whenReady().then(() => {
+app.whenReady().then(async () => {
   createLoadingWindow();
   createMainWindow();
 
   // ==========================================================
-  // LOPULLINEN JA OIKEA PÄIVITYSLOGIIKKA
+  // VIIMEINEN OLJENKORSI: LISÄTÄÄN VIIVE
   // ==========================================================
+  
   log.transports.file.level = "info";
   autoUpdater.logger = log;
 
+  const { default: isDev } = await import('electron-is-dev');
+
+  if (isDev) {
+    log.info('Kehitystilassa, asetetaan päivitystiedot suoraan updater-objektiin...');
+    autoUpdater.provider = 'github';
+    autoUpdater.owner = 'Herra-Atlas';
+    autoUpdater.repo = 'heartcrown';
+  }
+
+  // Asetetaan kaikki kuuntelijat valmiiksi
   autoUpdater.on('checking-for-update', () => { log.info('Tarkistetaan päivityksiä...'); });
   autoUpdater.on('update-available', (info) => { log.info('Päivitys saatavilla!', info); });
   autoUpdater.on('update-not-available', (info) => { log.info('Ei uusia päivityksiä saatavilla.', info); });
   autoUpdater.on('error', (err) => { log.error('Päivityksessä virhe: ' + err); });
-  autoUpdater.on('download-progress', (progressObj) => {
-      let log_message = `Ladattu ${Math.round(progressObj.percent)}% (${Math.round(progressObj.transferred/1024/1024)}MB / ${Math.round(progressObj.total/1024/1024)}MB)`;
-      log.info(log_message);
-  });
-  autoUpdater.on('update-downloaded', (info) => {
-      log.info('Päivitys ladattu onnistuneesti.', info);
-      const dialogOpts = { type: 'info', buttons: ['Käynnistä uudelleen', 'Myöhemmin'], title: 'Sovelluksen päivitys', message: `Uusi versio ${info.version} on ladattu.`, detail: 'Käynnistä sovellus uudelleen nyt ottaaksesi päivitykset käyttöön.' };
-      dialog.showMessageBox(dialogOpts).then((returnValue) => {
-          if (returnValue.response === 0) autoUpdater.quitAndInstall();
-      });
-  });
+  autoUpdater.on('download-progress', (progressObj) => { /* ... koodisi ... */ });
+  autoUpdater.on('update-downloaded', (info) => { /* ... koodisi ... */ });
+  
+  // TÄMÄ ON MUUTOS: Lisätään 2 sekunnin viive ennen tarkistusta.
+  setTimeout(() => {
+    log.info('Viiveen jälkeen, yritetään tarkistaa päivitykset...');
+    autoUpdater.checkForUpdates();
+  }, 2000);
 
-  // TÄRKEÄÄ: Tarkistetaan päivitykset vasta, kun KAIKKI kuuntelijat on asetettu.
-  autoUpdater.checkForUpdates();
 
   app.on('activate', () => {
     if (BrowserWindow.getAllWindows().length === 0) {
@@ -195,6 +201,34 @@ ipcMain.handle('crypto-decrypt', async (event, { encryptedData, password }) => {
         if (error.message.includes('bad auth tag')) {
             return { success: false, error: 'Purku epäonnistui. Tarkista salasana tai salattu data.' };
         }
+        return { success: false, error: error.message };
+    }
+});
+
+// IPC Välimuistin tyhjennys
+ipcMain.handle('clear-app-cache', async () => {
+  if (mainWindow) {
+    const session = mainWindow.webContents.session;
+    await session.clearCache();
+    log.info('Sovelluksen välimuisti tyhjennetty.');
+    return { success: true };
+  }
+  return { success: false, error: 'Pääikkunaa ei löytynyt.' };
+});
+
+// IPC Asetusten nollaus
+ipcMain.handle('reset-app-settings', async () => {
+    try {
+        await fs.unlink(settingsPath);
+        log.info('Asetustiedosto poistettu onnistuneesti.');
+        return { success: true };
+    } catch (error) {
+        // Jos tiedostoa ei ole olemassa, se ei ole virhe
+        if (error.code === 'ENOENT') {
+            log.info('Asetustiedostoa ei ollut olemassa, mitään ei poistettu.');
+            return { success: true };
+        }
+        log.error('Asetustiedoston poistaminen epäonnistui:', error);
         return { success: false, error: error.message };
     }
 });

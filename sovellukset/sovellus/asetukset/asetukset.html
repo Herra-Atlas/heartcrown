@@ -1,0 +1,63 @@
+<div class="settings-container">
+    <header class="settings-header">
+        <h1>Asetukset</h1>
+    </header>
+
+    <main class="settings-main">
+        <!-- Yleiset Asetukset -->
+        <section class="settings-section">
+            <h2 class="settings-section__title">Yleiset</h2>
+            <div class="settings-item">
+                <label for="theme-select" class="settings-item__label">Teema</label>
+                <select id="theme-select" class="settings-item__control">
+                    <option value="dark">Tumma</option>
+                    <option value="light">Vaalea</option>
+                    <option value="system">Järjestelmän oletus</option>
+                </select>
+            </div>
+            <div class="settings-item">
+                <label for="language-select" class="settings-item__label">Kieli</label>
+                <select id="language-select" class="settings-item__control">
+                    <option value="fi">Suomi</option>
+                    <option value="en">English</option>
+                </select>
+            </div>
+        </section>
+
+        <!-- Käynnistys ja Ilmoitukset -->
+        <section class="settings-section">
+            <h2 class="settings-section__title">Käyttäytyminen</h2>
+            <div class="settings-item">
+                <label for="startup-toggle" class="settings-item__label">Käynnistä sovellus kirjautuessa</label>
+                <label class="toggle-switch">
+                    <input type="checkbox" id="startup-toggle" class="settings-item__control">
+                    <span class="toggle-switch__slider"></span>
+                </label>
+            </div>
+            <div class="settings-item">
+                <label for="notifications-toggle" class="settings-item__label">Näytä päivitysilmoitukset</label>
+                <label class="toggle-switch">
+                    <input type="checkbox" id="notifications-toggle" class="settings-item__control">
+                    <span class="toggle-switch__slider"></span>
+                </label>
+            </div>
+        </section>
+
+        <!-- Datan hallinta -->
+        <section class="settings-section">
+            <h2 class="settings-section__title">Tietojen hallinta</h2>
+            <div class="settings-item">
+                <span class="settings-item__label">Tyhjennä sovelluksen välimuisti</span>
+                <button id="clear-cache-button" class="settings-button settings-button--danger">Tyhjennä</button>
+            </div>
+                <div class="settings-item">
+                <span class="settings-item__label">Palauta kaikki asetukset</span>
+                <button id="reset-settings-button" class="settings-button settings-button--danger">Palauta</button>
+            </div>
+        </section>
+    </main>
+    
+    <footer class="settings-footer">
+            <p id="status-message" class="status-message"></p>
+    </footer>
+</div>

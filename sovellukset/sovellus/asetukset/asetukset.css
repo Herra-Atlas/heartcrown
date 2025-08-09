@@ -1,0 +1,144 @@
+/* Perusasetukset */
+body {
+    background-color: #1e1e1e;
+    color: #d4d4d4;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    margin: 0;
+    padding: 20px;
+    -webkit-user-select: none;
+    user-select: none;
+}
+
+/* Pääkontti */
+.settings-container {
+    max-width: 700px;
+    margin: 0 auto;
+}
+
+.settings-header h1 {
+    font-size: 2em;
+    color: #ffffff;
+    border-bottom: 1px solid #444;
+    padding-bottom: 10px;
+    margin-bottom: 30px;
+}
+
+/* Asetusosiot */
+.settings-section {
+    margin-bottom: 40px;
+}
+
+.settings-section__title {
+    font-size: 1.2em;
+    color: #a0a0a0;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    margin-bottom: 15px;
+}
+
+/* Yksittäinen asetusrivi */
+.settings-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 15px;
+    background-color: #2a2a2a;
+    border: 1px solid #3c3c3c;
+    border-radius: 8px;
+    margin-bottom: 10px;
+}
+
+.settings-item__label {
+    font-size: 1em;
+}
+
+/* Valinnat ja napit */
+.settings-item__control {
+    font-family: inherit;
+    font-size: 0.9em;
+}
+
+select.settings-item__control {
+    background-color: #3c3c3c;
+    color: #d4d4d4;
+    border: 1px solid #555;
+    padding: 8px 12px;
+    border-radius: 5px;
+}
+
+.settings-button {
+    background-color: #007acc;
+    color: white;
+    border: none;
+    padding: 8px 16px;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.2s;
+}
+
+.settings-button:hover {
+    background-color: #005a9e;
+}
+
+.settings-button--danger {
+    background-color: #c93c3c;
+}
+
+.settings-button--danger:hover {
+    background-color: #a12f2f;
+}
+
+/* Moderni toggle-kytkin */
+.toggle-switch {
+    position: relative;
+    display: inline-block;
+    width: 50px;
+    height: 28px;
+}
+
+.toggle-switch input {
+    opacity: 0;
+    width: 0;
+    height: 0;
+}
+
+.toggle-switch__slider {
+    position: absolute;
+    cursor: pointer;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: #444;
+    transition: .4s;
+    border-radius: 28px;
+}
+
+.toggle-switch__slider:before {
+    position: absolute;
+    content: "";
+    height: 20px;
+    width: 20px;
+    left: 4px;
+    bottom: 4px;
+    background-color: white;
+    transition: .4s;
+    border-radius: 50%;
+}
+
+input:checked + .toggle-switch__slider {
+    background-color: #007acc;
+}
+
+input:checked + .toggle-switch__slider:before {
+    transform: translateX(22px);
+}
+
+/* Statusviesti */
+.status-message {
+    margin-top: 20px;
+    text-align: center;
+    color: #4caf50;
+    opacity: 0;
+    transition: opacity 0.5s;
+}

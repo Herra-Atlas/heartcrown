@@ -10,7 +10,7 @@ class SidebarMenu {
     }
 
     init() {
-        // Wait for DOM to be ready
+        // Odotetaan, että DOM on valmis ennen asennusta
         if (document.readyState === 'loading') {
             document.addEventListener('DOMContentLoaded', () => this.setup());
         } else {
@@ -29,20 +29,15 @@ class SidebarMenu {
     async loadSidebar() {
         try {
             const data = await window.menuAPI.getHeaderHTML();
-
             const container = document.getElementById('sidebar-container');
             if (container) {
                 container.innerHTML = data;
-
-                // Elementtien viittaukset
                 this.sidebar = document.getElementById('sidebar-menu');
                 this.overlay = document.getElementById('sidebar-overlay');
                 this.mobileToggle = document.getElementById('mobile-toggle');
             }
-            return Promise.resolve();
         } catch (error) {
-            console.error('Error loading sidebar:', error);
-            return Promise.reject(error);
+            console.error('Sivupalkin lataus epäonnistui:', error);
         }
     }
 
@@ -54,368 +49,209 @@ class SidebarMenu {
             document.head.appendChild(link);
         }
     }
+
+    // --- PARANNELTU JA LUOTETTAVA JS-LATAUSFUNKTIO ---
     loadJS(src) {
-        if (!document.querySelector(`script[src="${src}"]`)) {
+        return new Promise((resolve, reject) => {
+            const existingScript = document.querySelector(`script[src="${src}"]`);
+            if (existingScript) {
+                // Skripti on jo ladattu, joten voimme jatkaa heti.
+                resolve();
+                return;
+            }
             const script = document.createElement('script');
             script.src = src;
             script.defer = true;
+            // Kun lataus onnistuu, Promise ratkeaa.
+            script.onload = () => resolve();
+            // Jos lataus epäonnistuu, Promise hylätään.
+            script.onerror = () => reject(new Error(`Virhe ladattaessa skriptiä: ${src}`));
             document.body.appendChild(script);
-        }
+        });
     }
 
-    // ...existing code...
-    handleNavClick(e, item) {
+    // --- PARANNELTU NAVIGOINTIKÄSITTELIJÄ ---
+    async handleNavClick(e, item) {
         const href = item.getAttribute('href');
-        if (href && href !== '#') {
+        if (!href || href === '#') {
             e.preventDefault();
-            fetch(href)
-                .then(res => res.text())
-                .then(html => {
-                    if (html.includes('<body')) {
-                        const temp = document.createElement('html');
-                        temp.innerHTML = html;
-                        const bodyContent = temp.querySelector('body')?.innerHTML || html;
-                        document.getElementById('content').innerHTML = bodyContent;
-                    } else {
-                        document.getElementById('content').innerHTML = html;
-                    }
-                    // Lataa muistio.css ja muistio.js jos muistio.html ladattiin
-                    if (href.endsWith('muistio/muistio.html')) {
-                        this.loadCSS('sovellukset/sovellus/muistio/muistio.css');
-                        this.loadJS('sovellukset/sovellus/muistio/muistio.js');
-                        setTimeout(() => {
-                            if (window.muistioInit) window.muistioInit();
-                        }, 100);
-                    } else if (href.endsWith('sovellukset/sovellus/kalenteri/kalenteri.html')) {
-                        this.loadCSS('sovellukset/sovellus/kalenteri/kalenteri.css');
-                        this.loadJS('sovellukset/sovellus/kalenteri/kalenteri.js');
-                    // ...existing code...
-                     } else if (href.endsWith('sovellukset/crypt/salaa.html') ||
-                        href.endsWith('sovellukset/crypt/purku.html') ||
-                        href.endsWith('sovellukset/crypt/asetukset.html')) {
-                        this.loadCSS('sovellukset/crypt/crypt.css');
-                        this.loadJS('sovellukset/crypt/crypt.js');
-                        setTimeout(() => {
-                          if (window.initializeCryptApp) window.initializeCryptApp();
-                        }, 100);
-                    }
-                })
-                .catch(err => {
-                    document.getElementById('content').innerHTML = '<p style="color:red">Sivua ei löytynyt.</p>';
-                });
-        } else {
-            e.preventDefault();
+            return;
+        }
+
+        e.preventDefault();
+
+        try {
+            const response = await fetch(href);
+            if (!response.ok) {
+                throw new Error(`Verkkovastaus ei ollut kunnossa: ${response.statusText}`);
+            }
+            const html = await response.text();
+
+            const contentDiv = document.getElementById('content');
+            if (html.includes('<body')) {
+                const temp = document.createElement('html');
+                temp.innerHTML = html;
+                contentDiv.innerHTML = temp.querySelector('body')?.innerHTML || html;
+            } else {
+                contentDiv.innerHTML = html;
+            }
+
+            // Dynaaminen skriptien ja tyylien lataus (nyt luotettava)
+            if (href.endsWith('muistio/muistio.html')) {
+                this.loadCSS('sovellukset/sovellus/muistio/muistio.css');
+                await this.loadJS('sovellukset/sovellus/muistio/muistio.js');
+                if (window.muistioInit) window.muistioInit();
+
+            } else if (href.endsWith('kalenteri/kalenteri.html')) {
+                this.loadCSS('sovellukset/sovellus/kalenteri/kalenteri.css');
+                await this.loadJS('sovellukset/sovellus/kalenteri/kalenteri.js');
+                // Oletus: jos kalenteri.js:ssä on init-funktio
+                if (window.initializeCalendar) window.initializeCalendar();
+
+            } else if (href.includes('sovellukset/crypt/')) {
+                this.loadCSS('sovellukset/crypt/crypt.css');
+                await this.loadJS('sovellukset/crypt/crypt.js');
+                if (window.initializeCryptApp) window.initializeCryptApp();
+
+            } else if (href.endsWith('asetukset/asetukset.html')) {
+                this.loadCSS('sovellukset/sovellus/asetukset/asetukset.css');
+                await this.loadJS('sovellukset/sovellus/asetukset/asetukset.js');
+                if (window.initializeSettings) window.initializeSettings();
+            }
+
+        } catch (err) {
+            console.error('Sivun lataus epäonnistui:', err);
+            document.getElementById('content').innerHTML = '<p style="color:red; text-align:center;">Sivun lataus epäonnistui.</p>';
         }
     }
 
     bindEvents() {
         if (!this.sidebar) return;
-
-        // Mobile toggle button
-        if (this.mobileToggle) {
-            this.mobileToggle.addEventListener('click', () => this.toggleMobile());
-        }
-
-        // Overlay click to close
-        if (this.overlay) {
-            this.overlay.addEventListener('click', () => this.closeMobile());
-        }
-
-        // Expandable menu items
-        const expandableItems = this.sidebar.querySelectorAll('.nav-item.expandable');
-        expandableItems.forEach(item => {
+        this.mobileToggle?.addEventListener('click', () => this.toggleMobile());
+        this.overlay?.addEventListener('click', () => this.closeMobile());
+        this.sidebar.querySelectorAll('.nav-item').forEach(item => {
             item.addEventListener('click', (e) => this.handleExpandableClick(e, item));
         });
-
-        // Regular navigation items
-        const navItems = this.sidebar.querySelectorAll('.nav-item:not(.expandable)');
-        navItems.forEach(item => {
-            item.addEventListener('click', (e) => this.handleNavClick(e, item));
-        });
-
-        // Submenu items
-        const submenuItems = this.sidebar.querySelectorAll('.submenu-item');
-        submenuItems.forEach(item => {
+        this.sidebar.querySelectorAll('.submenu-item').forEach(item => {
             item.addEventListener('click', (e) => this.handleSubmenuClick(e, item));
         });
-
-        // Window resize handler
         window.addEventListener('resize', () => this.handleResize());
-
-        // Keyboard navigation
         document.addEventListener('keydown', (e) => this.handleKeyboard(e));
     }
 
     handleExpandableClick(e, item) {
+        if (!item.classList.contains('expandable')) {
+            this.handleNavClick(e, item);
+            this.setActiveItem(item);
+            return;
+        }
+
         e.preventDefault();
-        
         const targetId = item.getAttribute('data-target');
         const submenu = document.getElementById(targetId);
-        const arrow = item.querySelector('.nav-arrow');
-        
-        if (submenu) {
-            const isExpanded = submenu.classList.contains('expanded');
-            
-            // Close all other submenus
-            this.closeAllSubmenus();
-            
-            if (!isExpanded) {
-                // Open this submenu
-                submenu.classList.add('expanded');
-                item.classList.add('expanded');
-                
-                // Animate the expansion
-                submenu.style.maxHeight = submenu.scrollHeight + 'px';
-                
-                // Add active state
-                this.setActiveItem(item);
-            } else {
-                // Close this submenu
-                submenu.classList.remove('expanded');
-                item.classList.remove('expanded');
-                submenu.style.maxHeight = '0';
-            }
-        }
-        
-        // Close mobile menu if open
-        if (this.isMobile && this.isOpen) {
-            setTimeout(() => this.closeMobile(), 300);
+        if (!submenu) return;
+
+        const isCurrentlyExpanded = item.classList.contains('expanded');
+        this.closeAllSubmenus();
+
+        if (!isCurrentlyExpanded) {
+            item.classList.add('expanded');
+            submenu.classList.add('expanded');
+            submenu.style.maxHeight = submenu.scrollHeight + 'px';
+            this.setActiveItem(item);
         }
     }
 
     handleSubmenuClick(e, item) {
-        const href = item.getAttribute('href');
-        if (href && href !== '#') {
-            // Set active state for submenu item
-            this.setActiveSubmenuItem(item);
-
-            // Close mobile menu if open
-            if (this.isMobile && this.isOpen) {
-                setTimeout(() => this.closeMobile(), 100);
-            }
-
-            // *** TÄRKEÄ MUUTOS: Lataa sisältö kuten handleNavClick ***
-            this.handleNavClick(e, item);
-        } else {
-            e.preventDefault();
+        this.setActiveSubmenuItem(item);
+        if (this.isMobile && this.isOpen) {
+            setTimeout(() => this.closeMobile(), 150);
         }
+        this.handleNavClick(e, item);
     }
-
-    navigateToPage(href) {
-        // Add loading state
-        this.showLoadingState();
-        
-        // Simulate page navigation (replace with actual navigation logic)
-        console.log('Navigating to:', href);
-        
-        // You can implement actual page loading here
-        // For example: window.location.href = href;
-        
-        // Remove loading state after a delay
-        setTimeout(() => this.hideLoadingState(), 500);
-    }
-
-    showLoadingState() {
-        const content = document.getElementById('content');
-        if (content) {
-            content.style.opacity = '0.6';
-            content.style.pointerEvents = 'none';
-        }
-    }
-
-    hideLoadingState() {
-        const content = document.getElementById('content');
-        if (content) {
-            content.style.opacity = '1';
-            content.style.pointerEvents = 'auto';
-        }
-    }
-
+    
     closeAllSubmenus() {
-        const expandedSubmenus = this.sidebar.querySelectorAll('.submenu.expanded');
-        const expandedItems = this.sidebar.querySelectorAll('.nav-item.expanded');
-        
-        expandedSubmenus.forEach(submenu => {
+        this.sidebar.querySelectorAll('.submenu.expanded').forEach(submenu => {
             submenu.classList.remove('expanded');
             submenu.style.maxHeight = '0';
         });
-        
-        expandedItems.forEach(item => {
+        this.sidebar.querySelectorAll('.nav-item.expanded').forEach(item => {
             item.classList.remove('expanded');
         });
     }
 
     setActiveItem(item) {
-        // Remove active class from all nav items
-        const allNavItems = this.sidebar.querySelectorAll('.nav-item');
-        allNavItems.forEach(navItem => navItem.classList.remove('active'));
-        
-        // Add active class to clicked item
+        this.sidebar.querySelectorAll('.nav-item').forEach(i => i.classList.remove('active'));
         item.classList.add('active');
-        
-        // Store active item in localStorage
-        const itemText = item.querySelector('.nav-text')?.textContent;
-        if (itemText) {
-            localStorage.setItem('activeMenuItem', itemText);
-        }
+        localStorage.setItem('activeMenuItem', item.getAttribute('data-target') || item.getAttribute('href'));
     }
 
     setActiveSubmenuItem(item) {
-        // Remove active class from all submenu items
-        const allSubmenuItems = this.sidebar.querySelectorAll('.submenu-item');
-        allSubmenuItems.forEach(submenuItem => submenuItem.classList.remove('active'));
-        
-        // Add active class to clicked item
+        this.sidebar.querySelectorAll('.submenu-item').forEach(i => i.classList.remove('active'));
         item.classList.add('active');
-        
-        // Store active submenu item in localStorage
-        const itemText = item.querySelector('.submenu-text')?.textContent;
-        if (itemText) {
-            localStorage.setItem('activeSubmenuItem', itemText);
-        }
+        localStorage.setItem('activeSubmenuItem', item.getAttribute('href'));
     }
 
     setActiveMenuItem() {
-        // Restore active states from localStorage
-        const activeMenuItem = localStorage.getItem('activeMenuItem');
-        const activeSubmenuItem = localStorage.getItem('activeSubmenuItem');
+        const activeMenuItemHref = localStorage.getItem('activeMenuItem');
+        const activeSubmenuItemHref = localStorage.getItem('activeSubmenuItem');
         
-        if (activeMenuItem) {
-            const navItems = this.sidebar.querySelectorAll('.nav-item .nav-text');
-            navItems.forEach(textElement => {
-                if (textElement.textContent === activeMenuItem) {
-                    textElement.closest('.nav-item').classList.add('active');
+        if (activeMenuItemHref) {
+            const item = this.sidebar.querySelector(`.nav-item[data-target="${activeMenuItemHref}"], .nav-item[href="${activeMenuItemHref}"]`);
+            if (item) {
+                item.classList.add('active');
+                if (item.classList.contains('expandable')) {
+                    const submenu = document.getElementById(item.getAttribute('data-target'));
+                    submenu.classList.add('expanded');
+                    submenu.style.maxHeight = submenu.scrollHeight + 'px';
                 }
-            });
+            }
         }
-        
-        if (activeSubmenuItem) {
-            const submenuItems = this.sidebar.querySelectorAll('.submenu-item .submenu-text');
-            submenuItems.forEach(textElement => {
-                if (textElement.textContent === activeSubmenuItem) {
-                    const submenuItem = textElement.closest('.submenu-item');
-                    submenuItem.classList.add('active');
-                    
-                    // Also expand the parent submenu
-                    const submenu = submenuItem.closest('.submenu');
-                    if (submenu) {
-                        submenu.classList.add('expanded');
-                        submenu.style.maxHeight = submenu.scrollHeight + 'px';
-                        
-                        // Find and expand the parent nav item
-                        const targetId = submenu.id;
-                        const parentNavItem = this.sidebar.querySelector(`[data-target="${targetId}"]`);
-                        if (parentNavItem) {
-                            parentNavItem.classList.add('expanded');
-                        }
-                    }
-                }
-            });
+        if (activeSubmenuItemHref) {
+            const item = this.sidebar.querySelector(`.submenu-item[href="${activeSubmenuItemHref}"]`);
+            item?.classList.add('active');
         }
     }
 
     toggleMobile() {
-        if (this.isOpen) {
-            this.closeMobile();
-        } else {
-            this.openMobile();
-        }
+        this.isOpen ? this.closeMobile() : this.openMobile();
     }
 
     openMobile() {
-        if (this.sidebar && this.overlay) {
-            this.sidebar.classList.add('mobile-open');
-            this.overlay.classList.add('active');
-            this.isOpen = true;
-            document.body.style.overflow = 'hidden';
-        }
+        this.sidebar?.classList.add('mobile-open');
+        this.overlay?.classList.add('active');
+        this.isOpen = true;
+        document.body.style.overflow = 'hidden';
     }
 
     closeMobile() {
-        if (this.sidebar && this.overlay) {
-            this.sidebar.classList.remove('mobile-open');
-            this.overlay.classList.remove('active');
-            this.isOpen = false;
-            document.body.style.overflow = '';
-        }
+        this.sidebar?.classList.remove('mobile-open');
+        this.overlay?.classList.remove('active');
+        this.isOpen = false;
+        document.body.style.overflow = '';
     }
 
     handleResize() {
         const wasMobile = this.isMobile;
         this.isMobile = window.innerWidth <= 768;
-        
-        // If switching from mobile to desktop, close mobile menu
         if (wasMobile && !this.isMobile && this.isOpen) {
             this.closeMobile();
         }
-        
-        // Adjust content margin
         const content = document.getElementById('content');
         if (content) {
-            if (this.isMobile) {
-                content.style.marginLeft = '0';
-            } else {
-                content.style.marginLeft = '280px';
-            }
+            content.style.marginLeft = this.isMobile ? '0' : '280px';
         }
     }
 
     handleKeyboard(e) {
-        // ESC key to close mobile menu
         if (e.key === 'Escape' && this.isMobile && this.isOpen) {
             this.closeMobile();
         }
     }
-
-    // Public methods for external use
-    expandSubmenu(targetId) {
-        const submenu = document.getElementById(targetId);
-        const parentItem = this.sidebar.querySelector(`[data-target="${targetId}"]`);
-        
-        if (submenu && parentItem) {
-            submenu.classList.add('expanded');
-            parentItem.classList.add('expanded');
-            submenu.style.maxHeight = submenu.scrollHeight + 'px';
-        }
-    }
-
-    collapseSubmenu(targetId) {
-        const submenu = document.getElementById(targetId);
-        const parentItem = this.sidebar.querySelector(`[data-target="${targetId}"]`);
-        
-        if (submenu && parentItem) {
-            submenu.classList.remove('expanded');
-            parentItem.classList.remove('expanded');
-            submenu.style.maxHeight = '0';
-        }
-    }
-
-    setActiveByText(text, isSubmenu = false) {
-        if (isSubmenu) {
-            const submenuItems = this.sidebar.querySelectorAll('.submenu-item .submenu-text');
-            submenuItems.forEach(textElement => {
-                if (textElement.textContent === text) {
-                    this.setActiveSubmenuItem(textElement.closest('.submenu-item'));
-                }
-            });
-        } else {
-            const navItems = this.sidebar.querySelectorAll('.nav-item .nav-text');
-            navItems.forEach(textElement => {
-                if (textElement.textContent === text) {
-                    this.setActiveItem(textElement.closest('.nav-item'));
-                }
-            });
-        }
-    }
 }
 
-// Initialize the sidebar menu
+// Käynnistetään sivupalkin valikko
 const sidebarMenu = new SidebarMenu();
 
-// Make it globally available
+// Tehdään se globaalisti saatavaksi, jos tarpeen
 window.sidebarMenu = sidebarMenu;
-
-// Export for module use
-if (typeof module !== 'undefined' && module.exports) {
-    module.exports = SidebarMenu;
-}

@@ -14,4 +14,7 @@ contextBridge.exposeInMainWorld('electronAPI', {
   decrypt: (data) => ipcRenderer.invoke('crypto-decrypt', data),
   loadSettings: () => ipcRenderer.invoke('settings-load'),
   saveSettings: (settings) => ipcRenderer.invoke('settings-save', settings),
+
+  clearAppCache: () => ipcRenderer.invoke('clear-app-cache'),
+  resetAppSettings: () => ipcRenderer.invoke('reset-app-settings'),
 })
